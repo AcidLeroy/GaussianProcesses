@@ -1,0 +1,9 @@
+*.log
+*.gz
+*.pdf
+*.png
+*.eps
+*.aux
+tex_output
+*.out
+.DS_Store

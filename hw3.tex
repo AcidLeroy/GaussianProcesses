@@ -1,0 +1,90 @@
+%{
+\documentclass[11pt, twoside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex	
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{matlab-prettifier}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{cite}
+\usepackage{bm}
+\usepackage{hyperref} 
+\usepackage[section]{placeins}
+\lstset{style=Matlab-editor,basicstyle=\ttfamily}
+
+\sloppy
+\definecolor{lightgray}{gray}{0.5}
+\newenvironment{matlab}{\comment}{\endcomment}
+\newenvironment{matlabv}{\lstlisting}{\endlstlisting}	
+
+
+\title{Homework \# 3 \\ Gaussian Processes}
+\author{Cody W. Eilar}
+%\date{}							% Activate to display a given date or no date
+
+\begin{document}
+
+\maketitle
+
+
+\begin{matlab}
+%}
+close all; 
+clear all;
+
+fid = fopen('output_dir/computer.tex', 'w'); 
+fprintf(fid, computer); 
+fclose(fid); 
+
+fid = fopen('output_dir/matlabver.tex', 'w'); 
+a = ver('matlab'); 
+fprintf(fid, [a.Name ' version ' a.Version]); 
+fclose(fid); 
+%{
+\end{matlab}
+
+\section{Introduction} 
+In the previous homework assignments we focused on processes with support vector machines
+and kernels. Support vector machines are great because no \textit{a prior} assumptions
+are made about the data. This then allows them to work in a myriad of cases when a
+distribution about the data is not known. However, they can become computationally 
+infeasible when cross validation is introduced. When dealing with large datasets, it can
+take hours or days to properly compute the accuracy of a machine using cross validation 
+techniques. This is where Gaussian processes are truly a useful tool. With Gaussian processes
+there is no need to cross validate because the uncertainty is built into the model and it 
+is therefore safe to assume with some certainty that the data in which you are trying to 
+predict or fit will fall into that assumption.
+
+In this paper we will explore how Linear Gaussian Processes work and what their advantages, 
+as well as their disadvantages are for regressing and classifying stochastic processes. 
+We will also look into extending Gaussian Processes to using \textit{Recursive Kernel Hilbert
+Spaces}. We then look at how to optimize the hyper-parameters using exact inference. 
+This then will set us up to demonstrate this theory in a few experiments that use
+\textbf{MATLAB} to demonstrate a few key principles of Gaussian Processes. 
+\section{Theory}
+\subsection{Linear Gaussian Process}
+\subsection{Gaussian process in Recursive Kernel Hilbert Spaces}
+\subsection{Inference over the hyperparameters}
+
+\section{Methodology and Experiments}
+\subsection{Linear Gaussian Process}
+\subsubsection{Experimental setup}
+\subsubsection{Linear Gaussian Process for Prediction}
+\subsubsection{Linear ARMA and AR(1) process noise}
+\subsection{Nonlinear Gaussian Process}
+
+\section{Discussion and Conclusion}
+
+\bibliography{hw3.bib}
+\bibliographystyle{ieeetr}
+
+\end{document}  
+%}
+
