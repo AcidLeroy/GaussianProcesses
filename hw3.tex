@@ -70,7 +70,92 @@ This then will set us up to demonstrate this theory in a few experiments that us
 \textbf{MATLAB} to demonstrate a few key principles of Gaussian Processes. 
 \section{Theory}
 \subsection{Linear Gaussian Process}
+We begin the theory section by looking into the signal model and the optimization criterion
+for linear processes. As with \textit{SVM}s we are trying to solve Equation \ref{eq:linear_eq}
+
+\begin{align}
+f(x) &= \mathbf{x}^T\mathbf{w}\label{eq:linear_eq}
+\end{align}
+
+However, in the case of Gaussian Processes, we now assume that there is additive noise 
+$\epsilon$ as shown in Equation \ref{eq:add_noise}
+\begin{align}
+y &= f(x) + \epsilon \label{eq:add_noise}
+\end{align}
+
+We take that assumption further and say that the additive noise is independent, 
+identically distributed Gaussian noise with zero mean and variance $\sigma^2_n$ \cite{gauss_proc}.
+\begin{align}
+\epsilon \sim  \mathcal{N}(0, \sigma^2_n) \label{eq:guass_zero}
+\end{align}
+This now gives rise to what is known as the \textit{likelihood}. That is to say 
+given the samples, $X$ and the parameters $\bf{w}$ what is the likelihood
+of $\bf{y}$. Mathematically speaking, this is the same as Equation \ref{eq:likelihood}. 
+\begin{align}
+p(\mathbf{y}|X,\mathbf{w}) = \prod^n_{i=1}p(y_i|\mathbf{x}_i, \mathbf{w})\label{eq:likelihood}
+\end{align}
+The next step is to find the posterior and the marginal likelihood
+\begin{align}
+\text{posterior} &= \frac{\text{likelihood} \times \text{prior}}{\text{marginal likelihood}}
+\end{align}
+
+And then finally we can write the optimized model as predictive distribution:
+\begin{align}
+p(f_*|\mathbf{x}_*, X, \mathbf{y}) &= \int p(f_* |\mathbf{x}_*, w)p(\mathbf{w}|X, \mathbf{y})d\mathbf{w} \\
+&= \mathcal{N}(\frac{1}{\sigma^2_n} \mathbf{x}_*^TA^{-1} X \mathbf{y}, \mathbf{x}_*^T A^{-1} \mathbf{x}_*)
+\label{eq:predictive_dist}
+\end{align}
+
+
+It as at this point where we see that there is no criterion to choose for selecting an optimal model. 
+In SVMs for example, we have parameters like cost that we can tweak in order to get a more accurate model. 
+Here, however, there is no need for that process because we now have a distribution of where
+there data could potentially lie. In Equation \ref{eq:predictive_dist} the $*$ symbol denotes unseen
+ or test data and $A = \sigma^{-2}XX^T + \Sigma_p^{-1}$.
+
 \subsection{Gaussian process in Recursive Kernel Hilbert Spaces}
+The same process that is used to create the Gaussian predictive distributions can also be used
+in kernel spaces. In SVMs, the \textit{kernel trick} allowed us to pass to a higher dimensional 
+space easily and still have a tractable the problem. The same is also true for Gaussian processes
+\cite{gauss_proc}.In order to achieve this, we create a function $\phi(x)$ which maps a D-dimensional
+input vector $x$ into an N dimensional feature space. Thus our new formulation is $f(\mathbf{x}) = 
+\phi(\mathbf{x})^T\mathbf{w}$. We can analyze this model the same way that was done in the linear model. 
+We start again by showing the predictive distribution as show in \ref{eq:predictive_dist_hilbert}.
+
+\begin{align}
+p(\bar{f}_*|\mathbf{x}^*, \mathbf{y}, X) & \sim 
+  \mathcal{N}(\mathbf{\bar{w}}^T \mathbf{x}^*, \mathbf{x}^{*T} \mathbf{A}^{-1} \mathbf{x}^*)
+\label{eq:predictive_dist_hilbert}
+\end{align}
+
+Where $A = \sigma^{-2}XX^T + \Sigma_p^{-1}$ and $\mathbf{\bar{w}} = (\mathbf{XX}^T +
+\sigma_n^2 \Sigma_p^{-1})^{-1} \mathbf{Xy}$. Now we can take this formulation and apply
+the kernel trick to get the following equations. 
+
+\begin{align}
+\mathbf{A} &= \sigma_n^{-2} \mathbf{\Phi \Phi}^T + \Sigma_p^{-1} \\
+\mathbf{\bar{w}} &= (\mathbf{\Phi \Phi}^T + \sigma^2_n \Sigma_p^{-1})^{-1} \mathbf{\Phi y}
+\end{align}
+
+Where $\Phi$ is the aggregation of columns in $\phi(\mathbf{x})$. Now we can apply the Representer 
+Theorem to $\phi(x)$ as $\phi(x) \rightarrow \Sigma^{\frac{1}{2}}_p \phi(x)$ which gives a linear
+combination of the transformed data. The estimators can then be rewritten as: 
+
+\begin{align}
+\Sigma_p \mathbf{\Phi \alpha} &= (\mathbf{\Phi \Phi}^T + \sigma^2_n \Sigma^{-1}_p)^{-1} \mathbf{\Phi y} \\ 
+(\mathbf{\Phi \Phi}^T + \sigma^2_n \Sigma^{-1}_p) \Sigma_p \mathbf{\Phi \alpha} &= \mathbf{\Phi y}
+\label{eq:representer_phi}
+\end{align}
+
+After multiplying Equation \ref{eq:representer_phi} by $\mathbf{\Phi}^T$ we can obtain the dual 
+expression as show in Equation \ref{eq:dual_gauss}.
+
+\begin{align}
+\mathbf{\alpha} &= (\mathbf{\Phi}^T \Sigma_p \mathbf{\Phi} + \sigma^2_n \mathbf{I})^{-1} \mathbf{y}\\
+&= (\mathbf{K} + \sigma^2_n \mathbf{I})^{-1} \mathbf{y}
+\label{eq:dual_guass}
+\end{align}
+
 \subsection{Inference over the hyperparameters}
 
 \section{Methodology and Experiments}
