@@ -12,3 +12,6 @@ installed on your system.
 
 - Run hw3.m in MATLAB
 - Run pdflatex on hw3.tex
+
+Alternatively, you can run the build.sh script. Unfortunately I did not make
+this script cross platform (only works on OS X). 
