@@ -7,6 +7,7 @@
 \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex	
 \usepackage{amssymb}
+\usepackage{dsfont}
 \usepackage{color}
 \usepackage{matlab-prettifier}
 \usepackage{verbatim}
@@ -152,15 +153,97 @@ expression as show in Equation \ref{eq:dual_gauss}.
 
 \begin{align}
 \mathbf{\alpha} &= (\mathbf{\Phi}^T \Sigma_p \mathbf{\Phi} + \sigma^2_n \mathbf{I})^{-1} \mathbf{y}\\
-&= (\mathbf{K} + \sigma^2_n \mathbf{I})^{-1} \mathbf{y}
-\label{eq:dual_guass}
+&= (\mathbf{K} + \sigma^2_n \mathbf{I})^{-1} \mathbf{y} \label{eq:dual_gauss}
 \end{align}
 
+The kernel matrix $k(\cdot, \cdot)$ is known as a covariance function or a kernel. 
+The covariance between two random variables is defined as: 
+
+\begin{align}
+\text{cov}(f(\mathbf{x}_p), f(\mathbf{x}_q)) = k(\mathbf{x}_p, \mathbf{x}_q) = \text{exp}(-\frac{1}{2}|\mathbf{x}_p - 
+\mathbf{x}_q|^2)
+\end{align}
+
+If we assume that the process has zero mean, that is to say:
+
+\begin{align}
+\mathds{E}[f(\mathbf{x})] = \phi(\mathbf{x})^T \mathds{E}[\mathbf{w}] = 0 \\
+\mathds{E}[f(\mathbf{x}) f(\mathbf{x}^{'})] = \phi(\mathbf{x})^T\mathds{E}[\mathbf{ww}^T]\phi(\mathbf{x}^{'}) 
+= \phi(\mathbf{x})^T\Sigma_p\phi(\mathbf{x}^{'})
+\end{align}
+
+We can show that the kernel function is nothing more than a covariance function because the outputs
+are written as a function of the inputs. 
+
+
 \subsection{Inference over the hyperparameters}
+Proper selection of the hyperparameters is key to optimizing the performance of the estimator. One
+method to find these parameters is to use validation, but in many cases this is not practical when
+the dataset is small and the number of hyperparameters is high. Hence we can use one technique 
+known as hierarchical inference. 
+
 
 \section{Methodology and Experiments}
+In this section we go do a few various experiments using \textbf{MATLAB} to demonstrate how
+Gaussian processes work and what happens when various parameters are modified. We first look
+at Linear Gaussian Processes, then provide the experimental setup, observe how well these
+processes work for prediction with and without noise, and then finally we take a brief look
+at nonlinear Gaussian Processes. 
 \subsection{Linear Gaussian Process}
-\subsubsection{Experimental setup}
+\subsubsection{Experimental Setup}
+The experimental for this section involves creating data using an autoregressive-moving average model (ARMA)
+. The expression for an ARMA process is show in Equation \ref{eq:arma}. This model is often used for analyzing
+time series data. The ARMA model can be used for predicting and comprehending values in a time series $X_t$. 
+\begin{align}
+X_t = c + \varepsilon_t + \sum_{i=1}^p \varphi_i X_{t-i} + \sum_{i=1}^q \theta_i \varepsilon_{t-i} \label{eq:arma}
+\end{align}
+
+The variable $X_t$ refers to the time series data, $c$ is a constant, $\varepsilon_t$ is white noise, $\varphi$ is a
+list of  parameters for the auto regressive model (in our case this $\mathbf{a}$), $\theta$ represents the parameters 
+for the moving average model (in our case this is $\mathbf{b}$).
+
+For our experimental setup, we use the following coefficients for the moving average coefficients: 
+\begin{matlab}
+%}
+b = [0.0048, 0.0193, 0.0289, 0.0193, 0.0048];
+b_str = mat2str(b);
+b_str = b_str(2:end-1);
+fid = fopen('output_dir/b_str.tex', 'w'); 
+fprintf(fid, b_str); 
+fclose(fid); 
+
+a = [1, -2.3695, 2.3140, -1.0547, 0.1874];
+a_str = mat2str(a);
+a_str = a_str(2:end-1);
+fid = fopen('output_dir/a_str.tex', 'w'); 
+fprintf(fid, a_str); 
+fclose(fid); 
+%{
+\end{matlab}
+\begin{align}
+\mathbf{b} = \{\input{output_dir/b_str}\}^T
+\end{align}
+
+and the following auto-regressive coefficients: 
+\begin{align}
+\mathbf{a} = \{\input{output_dir/a_str}\}^T
+\end{align}
+
+The input into the system consists of 100 samples of Gaussian 
+noise with unit variance and zero mean. This data shall be known 
+as $\omega[n]$ and a uniformly distributed random subset of these 
+data points shall be known as $f[n]$ which will be considered the training 
+data.
+
+\begin{matlab}
+%}
+num_samples = 100;
+num_subsamples = 20;
+omega_n = randn(1,num_samples);
+sub_samples = floor(num_sample/2*randn(1,20));
+%{
+\end{matlab}
+
 \subsubsection{Linear Gaussian Process for Prediction}
 \subsubsection{Linear ARMA and AR(1) process noise}
 \subsection{Nonlinear Gaussian Process}
