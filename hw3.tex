@@ -179,8 +179,11 @@ are written as a function of the inputs.
 \subsection{Inference over the hyperparameters}
 Proper selection of the hyperparameters is key to optimizing the performance of the estimator. One
 method to find these parameters is to use validation, but in many cases this is not practical when
-the dataset is small and the number of hyperparameters is high. Hence we can use one technique 
-known as hierarchical inference. 
+the dataset is small and the number of hyperparameters is high. But when 
+our distribution is uniform Gaussian noise, we can use a method that is
+known as direct inference. With this method, we do not need to use any 
+validation techniques to get the optimal parameters, but we can rather get
+the hyperparamters directly 
 
 
 \section{Methodology and Experiments}
@@ -239,12 +242,58 @@ data.
 %}
 num_samples = 100;
 num_subsamples = 20;
-omega_n = randn(1,num_samples);
-sub_samples = floor(num_sample/2*randn(1,20));
+seed = 1; 
+rng(seed); 
+epsilon = randn(1,num_samples);
+plot(epsilon) 
+title('Noise per t')
+ylabel(sprintf('\\epsilon_t'))
+xlabel('t')
+saveas(gcf, 'figures/input_noise.eps', 'epsc')
+
+rng(seed); 
+f_n = arma(b, a, epsilon, 0);
+rng(seed); 
+r = randperm(num_samples); % Get random permutations
+r = r(1:num_subsamples); % Select the first 20 of those permutations
+r = sort(r); % Sort the samples in order of occurence
+sub_sample = f_n(r); 
+plot(f_n); hold on; 
+plot(r, sub_sample); 
+title(sprintf('$\\omega[n]$ with %d uniformly distributed subsamples.\n', num_subsamples), ...
+   'Interpreter', 'latex')
+hold off; 
+h = legend('$\omega[n]$', 'subsample');
+set(h, 'Interpreter', 'latex');
+saveas(gcf, 'figures/omega_subsample.eps', 'epsc')
+
 %{
 \end{matlab}
+\begin{figure}[h]
+\centering
+\includegraphics[width=4in]{figures/input_noise.eps}
+\caption{Gaussian noise with unit variance and zero mean (input into the system)}
+\label{fig:input_noise} 
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=4in]{figures/omega_subsample.eps}
+\caption{Output of the ARMA process with uniformly distributed subsample}
+\label{fig:omega_subsample} 
+\end{figure}
+\FloatBarrier
 
 \subsubsection{Linear Gaussian Process for Prediction}
+With our experimental data setup, we can now begin to look at how to use
+Gaussian processes to predict where our datapoints are going. To do this, 
+We define our Gaussian input as $x[n] = n$ and the output to be $f[n]$. 
+We will use the dual formulation in the code to predict these values. 
+
+
+
+
 \subsubsection{Linear ARMA and AR(1) process noise}
 \subsection{Nonlinear Gaussian Process}
 
