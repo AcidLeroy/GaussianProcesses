@@ -6,6 +6,10 @@ is a weaved document so it consists of *MATLAB* and tex woven into the same
 file. I have provided a .m file for convenience, but it is really just a 
 symbolic link to the tex file. 
 
+## What's needed
+In order to run the code, you need to have *MATLAB* installed, and you also need
+to download the code freely available from [Gaussian Processes](http://www.gaussianprocess.org/gpml/code/matlab/doc/index.html)
+
 ## Running the Code and Generating the Doc
 In order to run the code and build the pdf, you need to have *MATLAB* and tex
 installed on your system. 
