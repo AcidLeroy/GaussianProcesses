@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ${MATLABROOT?"Please set your MATLABROOT"}/bin/matlab -nojvm -nosplash < hw3.m
 pdflatex --output-directory tex_output/ hw3.tex
