@@ -178,12 +178,29 @@ are written as a function of the inputs.
 
 \subsection{Inference over the hyperparameters}
 Proper selection of the hyperparameters is key to optimizing the performance of the estimator. One
-method to find these parameters is to use validation, but in many cases this is not practical when
+method to find these parameters is to use cross validation, but in many cases this is not practical when
 the dataset is small and the number of hyperparameters is high. But when 
-our distribution is uniform Gaussian noise, we can use a method that is
+our distribution is uniform, Guassian distribution, we can use a method that is
 known as direct inference. With this method, we do not need to use any 
 validation techniques to get the optimal parameters, but we can rather get
-the hyperparamters directly 
+the hyperparamters directly using the following process: 
+
+\begin{itemize}
+  \item Take the gradient of the marginal likelihood
+  \item Find the Hessian of the marginal likelihood
+  \item Use gradient descent to find all hyperparamters
+\end{itemize}
+
+The log marginal likelihood is derived in Chapter 2 of \cite{gauss_proc} and is defined 
+as: 
+\begin{align}
+\text{log}p(\mathbf{y} | X) = -\frac{1}{2} \mathbf{y}^T (K + \sigma^2_n I )^{-1} \mathbf{y} - \frac{1}{2} \text{log}|K + \sigma^2_nI|
+- \frac{n}{2} \text{log}(2\pi)
+\end{align}
+
+When the distribution is not guaranteed to be Gaussian, the problem can suffer from 
+having several local minima or maxima \cite{gauss_proc}, the trick is to find where 
+they are. In this case, other choices are more appropriate. 
 
 
 \section{Methodology and Experiments}
@@ -209,13 +226,15 @@ For our experimental setup, we use the following coefficients for the moving ave
 \begin{matlab}
 %}
 b = [0.0048, 0.0193, 0.0289, 0.0193, 0.0048];
+b =[0.0048, 0.0193, 0.0289, 0.0193, 0.0048];
 b_str = mat2str(b);
 b_str = b_str(2:end-1);
 fid = fopen('output_dir/b_str.tex', 'w'); 
 fprintf(fid, b_str); 
 fclose(fid); 
 
-a = [1, -2.3695, 2.3140, -1.0547, 0.1874];
+
+a =[2.3695, -2.3140, 1.0547, -0.1874];
 a_str = mat2str(a);
 a_str = a_str(2:end-1);
 fid = fopen('output_dir/a_str.tex', 'w'); 
@@ -243,6 +262,7 @@ data.
 num_samples = 100;
 num_subsamples = 20;
 seed = 1; 
+rng('default')
 rng(seed); 
 epsilon = randn(1,num_samples);
 plot(epsilon) 
@@ -252,7 +272,7 @@ xlabel('t')
 saveas(gcf, 'figures/input_noise.eps', 'epsc')
 
 rng(seed); 
-f_n = arma(b, a, epsilon, 0);
+f_n = filter(b, a, epsilon);
 rng(seed); 
 r = randperm(num_samples); % Get random permutations
 r = r(1:num_subsamples); % Select the first 20 of those permutations
@@ -290,7 +310,20 @@ With our experimental data setup, we can now begin to look at how to use
 Gaussian processes to predict where our datapoints are going. To do this, 
 We define our Gaussian input as $x[n] = n$ and the output to be $f[n]$. 
 We will use the dual formulation in the code to predict these values. 
+\begin{matlab}
+%}
+%%
+xtest = 1:100;
 
+xtrain = sort(f_n);
+xgen = xtrain(1:20);
+plot(xtrain); hold on ; plot(xgen);
+gauss_proc(xtrain, xgen, xtest, seed);
+%%
+
+
+%{
+\end{matlab}
 
 
 
