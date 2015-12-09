@@ -226,7 +226,6 @@ For our experimental setup, we use the following coefficients for the moving ave
 \begin{matlab}
 %}
 b = [0.0048, 0.0193, 0.0289, 0.0193, 0.0048];
-b =[0.0048, 0.0193, 0.0289, 0.0193, 0.0048];
 b_str = mat2str(b);
 b_str = b_str(2:end-1);
 fid = fopen('output_dir/b_str.tex', 'w'); 
@@ -314,11 +313,10 @@ We will use the dual formulation in the code to predict these values.
 %}
 %%
 xtest = 1:100;
-
-xtrain = sort(f_n);
-xgen = xtrain(1:20);
-plot(xtrain); hold on ; plot(xgen);
-gauss_proc(xtrain, xgen, xtest, seed);
+close all
+xtrain = 1:20; 
+ytrain = f_n(xtrain); 
+gauss_proc(r, sub_sample, f_n, xtest);
 %%
 
 

@@ -1,13 +1,13 @@
-function  gauss_proc( xtrain, xgen, xtest, seed)
+function  gauss_proc( xtrain, ytrain, yreal, xtest)
 %gauss_proc example code using the real gaussian process code. 
 %    xtrain=sort(rand(1,20)*10-5);
 %    xgen=sort(rand(1,10)*10-5);
 %    xtest=-5:0.01:5;
-   cov = {'covSum', {'covSEiso','covNoise'}};
-   hypgen= [log(1) log(1)];
-   rng(seed)
-   ytrain=ones(size(xgen))*covSEiso(hypgen,xgen',xtrain')+.1*randn(size(xtrain));
-   yreal=ones(size(xgen))*covSEiso(hypgen,xgen',xtest');
+%    cov = {'covSum', {'covSEiso','covNoise'}};
+%    hypgen= [log(1) log(1)];
+%    rng(seed)
+%    ytrain=ones(size(xgen))*covSEiso(hypgen,xgen',xtrain')+.1*randn(size(xtrain));
+%    yreal=ones(size(xgen))*covSEiso(hypgen,xgen',xtest');
 
    %% regression
    hypSE= [log(1) log(1)];
@@ -30,7 +30,7 @@ function  gauss_proc( xtrain, xgen, xtest, seed)
 
    %% REPRESENTATION
    % Confidence interval to 2 sigma (95%)
-   fill([xtest fliplr(xtest)]',[f'+2*var' fliplr(f'-2*var')]',[1 0.9 0.9])
+   fill([xtest fliplr(xtest)]',[f'+1*var' fliplr(f'-1*var')]',[1 0.9 0.9])
    hold all
    plot(xtest,f,'k')
    plot(xtrain,ytrain,'*')
