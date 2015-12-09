@@ -308,7 +308,7 @@ saveas(gcf, 'figures/omega_subsample.eps', 'epsc')
 With our experimental data setup, we can now begin to look at how to use
 Gaussian processes to predict where our datapoints are going. To do this, 
 We define our Gaussian input as $x[n] = n$ and the output to be $f[n]$. 
-We will use the dual formulation in the code to predict these values. 
+We will use the dual formulation in the code to predict these values.  
 \begin{matlab}
 %}
 %%
@@ -317,12 +317,24 @@ close all
 xtrain = 1:20; 
 ytrain = f_n(xtrain); 
 gauss_proc(r, sub_sample, f_n, xtest);
+saveas(gcf, 'figures/guassian.eps', 'epsc')
 %%
-
-
 %{
 \end{matlab}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/guassian}
+\caption{Gaussian processes attempting to follow 20 randomly sampled points 
+from the original ARMA dataset}
+\label{fig:gaussian} 
+\end{figure}
+\FloatBarrier
+
+From Figure \ref{fig:gaussian} we can see that as the training points get closer
+together, our confidence interval becomes much tighter. This what we would 
+expect from the process. We can also see that the mean line (in blue) follows
+the sample points fairly well
 
 
 \subsubsection{Linear ARMA and AR(1) process noise}
