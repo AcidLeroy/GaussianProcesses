@@ -316,7 +316,9 @@ xtest = 1:100;
 close all
 xtrain = 1:20; 
 ytrain = f_n(xtrain); 
-gauss_proc(r, sub_sample, f_n, xtest);
+cov_func = @covSEiso;
+sigma = .05; 
+gauss_proc(r, sub_sample, f_n, xtest, cov_func, sigma);
 saveas(gcf, 'figures/guassian.eps', 'epsc')
 %%
 %{
@@ -325,20 +327,152 @@ saveas(gcf, 'figures/guassian.eps', 'epsc')
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/guassian}
-\caption{Gaussian processes attempting to follow 20 randomly sampled points 
+\caption{Linear Gaussian processes attempting to follow 20 randomly sampled points 
 from the original ARMA dataset}
 \label{fig:gaussian} 
 \end{figure}
 \FloatBarrier
 
-From Figure \ref{fig:gaussian} we can see that as the training points get closer
-together, our confidence interval becomes much tighter. This what we would 
-expect from the process. We can also see that the mean line (in blue) follows
-the sample points fairly well
+From Figure \ref{fig:gaussian} we can see that we are doing a pretty good
+job of following the ARMA input with only 20 samples 
 
 
 \subsubsection{Linear ARMA and AR(1) process noise}
+In this section, we create a similar ARMA function as the one used above, but now we are 
+going to a noise parameter, $a_n = 0.1$, to the data, $f[n]$.  The output is now: 
+
+\begin{align}
+y[n] = f(n) + g[n]
+\end{align}
+
+where $g[n] = w_g[n] + 0.2g[n-1]$ and $w_g[n]$ is white noise of variance 0.1. 
+
+Using again the Gaussian linear process, we plot the results in Figure
+\ref{fig:gaussian_noise}. 
+
+\begin{matlab}
+%}
+%%
+close all; 
+rng(seed); 
+[ my_fig, error] = prob3_2();
+saveas(my_fig, 'figures/guassian_noise.eps', 'epsc')
+
+fid = fopen('output_dir/gaussian_noise_mse.tex', 'w'); 
+fprintf(fid, mat2str(error)); 
+fclose(fid); 
+%{
+\end{matlab}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/guassian_noise}
+\caption{Linear Gaussian processes attempting to follow 20 randomly sampled points 
+from the original ARMA dataset now with noise added.  }
+\label{fig:gaussian_noise} 
+\end{figure}
+\FloatBarrier
+
+The MSE calculated in Figure is \ref{fig:gaussian_noise}
+\input{output_dir/gaussian_noise_mse}. So even with the added noise to the
+original signal, we are still able to maintain a fairly low error rate. 
+	
 \subsection{Nonlinear Gaussian Process}
+In this section, we look into the effectrs of using a non-linear gaussian
+process to predict our output. First we begin by reproducing our previous
+experiments but the input only contains the last 5 values of $x[n]$. This
+is the same as removing $f[n]$ from the model completely. The results of
+doing this are shown in Figure \ref{fig:gaussian_five} 
+
+\begin{matlab}
+%}
+%%
+close all 
+rng(seed)
+[my_fig, error ] = prob3_4a();
+saveas(my_fig, 'figures/guassian_five.eps', 'epsc')
+
+fid = fopen('output_dir/gaussian_five_mse.tex', 'w'); 
+fprintf(fid, mat2str(error)); 
+fclose(fid); 
+%{
+\end{matlab}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/guassian_five}
+\caption{Gaussian process which only contains the last 5 values of $x[n]$}
+\label{fig:gaussian_five} 
+\end{figure}
+\FloatBarrier
+
+Because of this, we have lowered our confidence in the estimations by the
+regressions process. This is clear in the results in figure
+\ref{fig:gaussian_five}, the margin is spread over a very wide interval.
+Now though, we want to see if we can improve our results using the sum of
+square exponentials plus a noise matrix. We attempt to do this and optimize
+with respect to the hyperparameters for the following conditions: 
+
+\begin{itemize}
+   \item With and output $f[n]$ corrupted by the white noise plus AR(1)
+   noise from the previous section. 
+\item and only with white noise. 
+\end{itemize}
+
+The first condition is illustrated in \ref{fig:gaussian_noise_five}.
+
+\begin{matlab}
+%}
+%%
+close all 
+rng(seed)
+[my_fig, error ] = prob3_4b();
+saveas(my_fig, 'figures/guassian_noise_five.eps', 'epsc')
+
+fid = fopen('output_dir/gaussian_noise_five_mse.tex', 'w'); 
+fprintf(fid, mat2str(error)); 
+fclose(fid); 
+%{
+\end{matlab}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/guassian_noise_five}
+\caption{Gaussian process which only contains the last 5 values of $x[n]$ plus AR(1) and white noise}
+\label{fig:gaussian_noise_five} 
+\end{figure}
+\FloatBarrier
+
+The MSE represented in Figure \ref{fig:gaussian_noise_five} is
+\input{output_dir/gaussian_noise_five_mse}. And now we want to compute the
+second condition that we mentioned above with only the whitenoise. 
+
+\begin{matlab}
+%}
+%%
+close all 
+rng(seed)
+[my_fig, error ] = prob3_4c();
+saveas(my_fig, 'figures/guassian_only_noise_five.eps', 'epsc')
+
+fid = fopen('output_dir/gaussian_only_noise_five_mse.tex', 'w'); 
+fprintf(fid, mat2str(error)); 
+fclose(fid); 
+%{
+\end{matlab}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figures/guassian_only_noise_five}
+\caption{Gaussian process which only contains the last 5 values of $x[n]$ and includes \textit{only} white noise}
+\label{fig:guassian_only_noise_five} 
+\end{figure}
+\FloatBarrier
+
+Figure \ref{fig:guassian_only_noise_five} contains only white noise added
+to the signal and has an MSE of
+\input{output_dir/gaussian_only_noise_five_mse}. This is infact lower than
+the previous estimate of the noise. 
 
 \section{Discussion and Conclusion}
 
